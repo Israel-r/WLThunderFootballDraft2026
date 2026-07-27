@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Westlake Thunder 8th Grade — Draft Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep: #0a1c34;
+    --navy: #0f2a4a;
+    --navy-line: #2c5490;
+    --carolina: #6fb8e6;
+    --carolina-deep: #3d84b8;
+    --gold: #c9a758;
+    --gold-deep: #8a6d2c;
+    --whistle-red: #c1443c;
+    --chalk: #eef3f9;
+    --chalk-dim: #a9bcd4;
+    --card: #f7f9fc;
+    --card-border: #d3dbe6;
+    --ink: #16233a;
+    --focus: #6fb8e6;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--navy-deep);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(111,184,230,0.08), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(201,167,88,0.06), transparent 55%);
+    background-attachment: fixed;
+    color: var(--chalk);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1750px;margin:0 auto;padding:18px 20px 60px;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+    padding-bottom:16px;margin-bottom:18px;border-bottom:3px solid var(--gold);
+  }
+  .title-block{display:flex;align-items:center;gap:12px;}
+  .bolt{flex:0 0 auto;}
+  .title-block h1{
+    font-family:'Anton',sans-serif;font-weight:400;letter-spacing:0.5px;
+    font-size:clamp(24px,3.2vw,38px);margin:0;line-height:1;color:var(--chalk);
+    text-transform:uppercase;
+  }
+  .title-block .sub{color:var(--chalk-dim);font-size:13px;margin-top:4px;letter-spacing:0.4px;}
+  .coach-box{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.2);border:1px solid var(--navy-line);padding:8px 10px;border-radius:var(--radius);}
+  .coach-box label{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--chalk-dim);}
+  .coach-box input{
+    background:var(--card);color:var(--ink);border:1px solid var(--card-border);border-radius:6px;
+    padding:8px 8px;font-size:16px;font-family:inherit;width:150px;
+  }
+  .coach-box input:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .coach-box select{
+    background:var(--card);color:var(--ink);border:1px solid var(--card-border);border-radius:6px;
+    padding:8px 8px;font-size:16px;font-family:inherit;
+  }
+  .coach-box select:disabled{opacity:0.65;}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+  button{
+    font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:13px;
+    border-radius:7px;border:1px solid var(--navy-line);background:var(--navy);color:var(--chalk);
+    padding:9px 13px;cursor:pointer;transition:transform .08s ease, background .15s ease;
+  }
+  button:hover{background:#173a63;}
+  button:active{transform:scale(0.97);}
+  button.primary{background:var(--gold);border-color:var(--gold-deep);color:#241a06;}
+  button.primary:hover{background:#d8b968;}
+  button.ghost{background:transparent;}
+  .modal button.ghost{color:var(--ink);border-color:var(--card-border);}
+  .modal button.ghost:hover{background:#eaeef4;}
+  button.cancel{background:var(--whistle-red);border-color:#8f2f29;color:#fff;}
+  button.cancel:hover{background:#d4544b;}
+  button.small{padding:4px 8px;font-size:11px;}
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:2px solid var(--focus);outline-offset:2px;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .board{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;}
+  .teams-area{flex:1 1 900px;display:flex;flex-direction:column;gap:14px;}
+  .teams-toolbar{display:flex;gap:8px;justify-content:flex-end;}
+  .teams-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px,1fr));gap:14px;align-items:start;}
+  .pool-col{flex:0 0 320px;min-width:270px;}
+
+  .col-panel{
+    background:rgba(0,0,0,0.2);border:1px solid var(--navy-line);border-radius:12px;
+    display:flex;flex-direction:column;max-height: 78vh;
+  }
+  .col-panel.team-locked{border:2px solid #3ecf6c;box-shadow:0 0 0 1px rgba(62,207,108,0.35);}
+  .locked-banner{
+    background:#1f7a41;color:#eafff0;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    padding:6px 14px;letter-spacing:0.3px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  }
+  .locked-banner .when{font-weight:500;opacity:0.85;}
+  .lock-btn{white-space:nowrap;}
+  .lock-btn.locked{background:#1f7a41;border-color:#144f2b;color:#eafff0;}
+  .lock-btn.locked:hover{background:#26904e;}
+  .col-head{padding:12px 14px 10px;border-bottom:2px solid rgba(255,255,255,0.08);}
+  .col-head .name-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .col-head h2{
+    font-family:'Anton',sans-serif;font-weight:400;font-size:19px;letter-spacing:0.4px;margin:0;
+    text-transform:uppercase;color:var(--chalk);
+  }
+  .col-head .coach-name{
+    font-size:12.5px;color:var(--carolina);font-weight:600;display:block;margin-top:1px;
+  }
+  .pick-order{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);white-space:nowrap;}
+  .count-line{display:flex;gap:10px;align-items:center;margin-top:6px;font-size:12px;color:var(--chalk-dim);flex-wrap:wrap;}
+  .count-pill{
+    font-family:'IBM Plex Mono',monospace;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,0.08);
+  }
+  .count-pill.warn{background:var(--whistle-red);color:#fff;}
+  .count-pill.low{background:rgba(201,167,88,0.28);color:var(--gold);}
+  .tag-count{font-family:'IBM Plex Mono',monospace;}
+  .collapse-toggle{margin-left:auto;}
+  .col-body{
+    padding:10px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px;min-height:80px;
+  }
+  .col-body.dragover{background:rgba(201,167,88,0.14);outline:2px dashed var(--gold);outline-offset:-4px;}
+  .col-panel.collapsed .col-body{display:none;}
+  .col-panel.collapsed{max-height:none;}
+  .empty-hint{color:var(--chalk-dim);font-size:12px;text-align:center;padding:18px 6px;font-style:italic;}
+
+  .pool-tools{display:flex;flex-direction:column;gap:6px;padding:0 2px 10px;}
+  .pool-tools input[type=text]{
+    width:100%;padding:9px;border-radius:7px;border:1px solid var(--card-border);
+    font-family:inherit;font-size:16px;background:var(--card);color:var(--ink);
+  }
+  .pool-tools select{
+    width:100%;padding:9px 8px;border-radius:7px;border:1px solid var(--card-border);
+    font-family:inherit;font-size:16px;background:var(--card);color:var(--ink);
+  }
+
+  /* ---------- PLAYER CARD ---------- */
+  .card{
+    background:var(--card);color:var(--ink);border:1px solid var(--card-border);border-radius:7px;
+    padding:5px 8px;cursor:grab;position:relative;box-shadow:0 1px 0 rgba(0,0,0,0.15);
+  }
+  .card:active{cursor:grabbing;}
+  .card.dragging{opacity:0.4;}
+  .card-top{display:flex;justify-content:space-between;align-items:center;gap:6px;padding-right:56px;}
+  @media (pointer:coarse){
+    .card-top{padding-right:80px;}
+  }
+  .card-name-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;overflow:hidden;flex:1 1 auto;}
+  .card-name{font-weight:700;font-size:13px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .badge{
+    font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;padding:1px 4px;border-radius:4px;
+    letter-spacing:0.3px;white-space:nowrap;flex-shrink:0;
+  }
+  .badge.new{background:var(--carolina-deep);color:#eaf6ff;}
+  .badge.returning{background:#3d5a3d;color:#eaffea;}
+  .badge.xman{background:var(--whistle-red);color:#fff;}
+  .positions-inline{font-size:10px;color:#5b5548;white-space:nowrap;flex:0 0 auto;}
+  .stat-row{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#584f3d;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .notes-row{font-size:10.5px;color:#5b5548;margin-top:4px;font-style:italic;}
+  .extra-info{display:none;}
+  .extra-info.open{display:block;}
+  .pref-row{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;}
+  .pref-pill{
+    font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;border-radius:5px;padding:1px 4px;
+    border:1px solid #c3cad6;background:#eaeef4;color:#6b7688;cursor:pointer;user-select:none;
+  }
+  .pref-pill.want{background:var(--gold);border-color:var(--gold-deep);color:#241a06;}
+  .pref-pill.bubble{background:#e7dcb8;border-color:var(--gold-deep);color:#5c4413;}
+  .pref-pill.pill-locked{opacity:0.55;cursor:not-allowed;}
+  .card-right{display:flex;align-items:center;gap:6px;flex:0 0 auto;flex-wrap:nowrap;flex-shrink:0;}
+  .status-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:11px;
+    border:1px solid;cursor:pointer;letter-spacing:0.2px;white-space:nowrap;
+  }
+  .status-btn.signed{background:var(--gold);border-color:var(--gold-deep);color:#241a06;}
+  .status-btn.considered{background:#ff2d2d;border-color:#8f2f29;color:#fff;}
+  .status-btn:hover{filter:brightness(1.08);}
+  .card.want-pick{border-left:4px solid var(--gold);}
+  .card.bubble-pick{border:3px solid #ff2d2d;box-shadow:0 0 0 1px rgba(255,45,45,0.35);}
+  .card-actions{position:absolute;top:4px;right:4px;display:flex;gap:2px;}
+  .edit-dot, .expand-toggle, .move-btn{
+    background:none;border:none;color:#8a8267;font-size:14px;padding:4px;cursor:pointer;line-height:1;
+    min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px;
+  }
+  .edit-dot:hover, .expand-toggle:hover, .move-btn:hover{color:#1b2420;background:rgba(0,0,0,0.06);}
+  @media (pointer:coarse){
+    .edit-dot, .expand-toggle, .move-btn{min-width:34px;min-height:34px;font-size:17px;}
+  }
+
+  /* ---------- MODALS ---------- */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(6,14,26,0.7);display:flex;align-items:center;justify-content:center;
+    z-index:50;padding:20px;
+  }
+  .modal{
+    background:var(--card);color:var(--ink);border-radius:12px;max-width:480px;width:100%;
+    max-height:85vh;overflow-y:auto;padding:20px 22px 22px;box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .modal h3{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;margin:0 0 14px;font-size:20px;letter-spacing:0.4px;}
+  .field{margin-bottom:11px;}
+  .field label{display:block;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:#5b5548;margin-bottom:3px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:10px 9px;border-radius:6px;border:1px solid var(--card-border);font-family:inherit;font-size:16px;background:#fff;color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:50px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pos-check-grid{display:flex;flex-wrap:wrap;gap:6px;}
+  .pos-check{
+    font-size:13px;border:1px solid var(--card-border);border-radius:16px;padding:7px 12px;cursor:pointer;background:#eaeef4;
+    user-select:none;
+  }
+  .pos-check.on{background:var(--navy);color:var(--chalk);border-color:var(--navy);}
+  .pos-check.uncertain{background:#fff;border:2px dashed var(--navy);color:var(--navy);font-style:italic;}
+  .modal-actions{display:flex;justify-content:space-between;gap:8px;margin-top:16px;}
+  .modal-actions .right{display:flex;gap:8px;}
+  button.danger{background:var(--whistle-red);border-color:#8f2f29;color:#fff;}
+  button.danger:hover{background:#d4544b;}
+
+  .import-textarea{width:100%;min-height:160px;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:10px;border-radius:8px;border:1px solid var(--card-border);}
+  .move-options{display:flex;flex-direction:column;gap:8px;margin:4px 0 6px;}
+  .move-option{
+    width:100%;text-align:left;padding:12px 14px;border-radius:8px;border:1px solid var(--card-border);
+    background:#eef1f6;color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;
+  }
+  .move-option:hover:not(:disabled){background:#e2e7f0;}
+  .move-option:disabled{opacity:0.55;cursor:not-allowed;}
+  .move-option.current{border-color:var(--navy);background:#dfe6f2;}
+  .photo-row{display:flex;gap:12px;align-items:center;}
+  .photo-preview{width:64px;height:64px;border-radius:8px;object-fit:cover;border:1px solid var(--card-border);background:#eaeef4;}
+  .photo-controls{display:flex;flex-direction:column;gap:6px;}
+  .photo-controls input[type=file]{font-size:13px;}
+
+  /* ---------- LOG PANEL ---------- */
+  .log-panel{
+    position:fixed;top:0;right:0;height:100vh;width:340px;max-width:90vw;background:#0b1e36;
+    border-left:2px solid var(--navy-line);z-index:60;transform:translateX(100%);transition:transform .25s ease;
+    display:flex;flex-direction:column;
+  }
+  .log-panel.open{transform:translateX(0);}
+  .log-head{padding:14px 16px;border-bottom:1px solid var(--navy-line);display:flex;justify-content:space-between;align-items:center;}
+  .log-head h3{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;margin:0;font-size:18px;}
+  .log-body{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:10px;}
+  .log-entry{border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:8px;font-size:12.5px;}
+  .log-entry .who{font-weight:700;color:var(--gold);}
+  .log-entry .when{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--chalk-dim);display:block;margin-top:2px;}
+  .status-msg{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--chalk);
+    padding:8px 16px;border-radius:20px;font-size:12.5px;border:1px solid var(--navy-line);z-index:80;opacity:0;
+    transition:opacity .3s ease;pointer-events:none;}
+  .status-msg.show{opacity:1;}
+
+  .loading-note{color:var(--chalk-dim);font-size:13px;padding:30px;text-align:center;}
+
+  /* ---------- TABLE VIEW ---------- */
+  .table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:var(--chalk-dim);}
+  .table-scroll{overflow-x:auto;border:1px solid var(--navy-line);border-radius:10px;background:rgba(0,0,0,0.18);}
+  table.player-table{width:100%;border-collapse:collapse;font-size:12.5px;color:var(--chalk);}
+  table.player-table thead th{background:var(--navy);padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--navy-line);}
+  table.player-table th.sortable{cursor:pointer;user-select:none;}
+  table.player-table th.sortable:hover{background:#173a63;}
+  table.player-table thead tr.filter-row th{background:var(--navy-deep);padding:4px 6px;}
+  table.player-table thead tr.filter-row input, table.player-table thead tr.filter-row select{
+    width:100%;font-size:11px;padding:3px 5px;border-radius:4px;border:1px solid var(--card-border);background:var(--card);color:var(--ink);
+  }
+  table.player-table tbody tr{cursor:pointer;}
+  table.player-table tbody tr:nth-child(even){background:rgba(255,255,255,0.03);}
+  table.player-table tbody tr:hover{background:rgba(201,167,88,0.14);}
+  table.player-table td{padding:6px 10px;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,0.06);}
+  table.player-table td.wrap-cell{white-space:normal;max-width:220px;}
+
+  /* ---------- PASSWORD GATE ---------- */
+  .password-gate{
+    position:fixed;inset:0;background:var(--navy-deep);display:flex;align-items:center;justify-content:center;
+    z-index:999;padding:20px;
+  }
+  .password-box{
+    background:var(--card);color:var(--ink);border-radius:14px;max-width:340px;width:100%;
+    padding:30px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  }
+  .password-box h2{
+    font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;margin:0 0 6px;font-size:22px;letter-spacing:0.4px;
+  }
+  .password-box p{font-size:13px;color:#5b5548;margin:0 0 16px;}
+  .password-box input{
+    width:100%;padding:12px 11px;border-radius:7px;border:1px solid var(--card-border);font-family:inherit;
+    font-size:16px;margin-bottom:10px;background:#fff;color:var(--ink);text-align:center;
+  }
+  .password-box button{width:100%;padding:12px;}
+  .pw-error{color:var(--whistle-red);font-size:12.5px;margin-top:10px;font-weight:600;}
+
+  @media (max-width:900px){
+    .board{flex-direction:column;}
+    .pool-col{flex-basis:auto;width:100%;}
+    .col-panel{max-height:60vh;}
+  }
+
+  @media (max-width:600px){
+    .wrap{padding:12px 12px 40px;}
+    header.top{gap:10px;padding-bottom:12px;margin-bottom:14px;}
+    .title-block h1{font-size:22px;}
+    .title-block .sub{font-size:11px;}
+    .coach-box{width:100%;flex-wrap:wrap;row-gap:6px;}
+    .coach-box input{flex:1 1 120px;width:auto;}
+    .coach-box select{flex:1 1 120px;}
+    .btn-row{width:100%;}
+    .btn-row button{flex:1 1 auto;}
+    .modal{padding:16px 16px 18px;max-width:100%;}
+    .two-col{grid-template-columns:1fr;}
+    .log-panel{width:100%;max-width:100%;}
+    .teams-toolbar{justify-content:stretch;}
+    .teams-toolbar button{flex:1 1 auto;}
+  }
+
+  /* Touch devices (phones/tablets) get bigger tap targets regardless of screen width */
+  @media (pointer:coarse){
+    button{padding:11px 15px;font-size:14px;}
+    button.small{padding:9px 12px;font-size:12.5px;}
+    .pref-pill{padding:5px 9px;font-size:11px;}
+    .status-btn{padding:6px 11px;font-size:12px;}
+    .pos-check{padding:9px 13px;}
+    input, select, textarea{font-size:16px;}
+  }
+</style>
+</head>
+<body>
+<div class="password-gate" id="passwordGate">
+  <div class="password-box">
+    <svg width="26" height="34" viewBox="0 0 26 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:8px;">
+      <path d="M16 0L2 20H12L9 34L24 12H14L16 0Z" fill="#c9a758"/>
+    </svg>
+    <h2>Thunder Draft Board</h2>
+    <p>Enter the coach access password to continue.</p>
+    <input type="password" id="pwInput" placeholder="Password" autocomplete="off" />
+    <button class="primary" id="pwSubmit">Enter</button>
+    <div class="pw-error" id="pwError" style="display:none;">Incorrect password. Try again.</div>
+  </div>
+</div>
+<div class="password-gate" id="setupNeededGate" style="display:none;">
+  <div class="password-box">
+    <h2>⚙️ Setup needed</h2>
+    <p style="text-align:left;">
+      This copy of the draft board isn't connected to a database yet, so nothing will save.
+      Open the HTML file, find the line near the top of the script that says:
+    </p>
+    <p style="text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:#eee;padding:8px;border-radius:6px;color:#333;">
+      const FIREBASE_DB_URL = 'PASTE_YOUR_FIREBASE_DATABASE_URL_HERE';
+    </p>
+    <p style="text-align:left;">and replace it with your Firebase Realtime Database URL, then re-upload the file.</p>
+  </div>
+</div>
+<div class="wrap">
+  <header class="top">
+    <div class="title-block">
+      <svg class="bolt" width="26" height="34" viewBox="0 0 26 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 0L2 20H12L9 34L24 12H14L16 0Z" fill="#c9a758"/>
+      </svg>
+      <div>
+        <h1>Thunder Draft Board</h1>
+        <div class="sub">Westlake 8th Grade Football · Pick order: A1 (Crane) → A2 (Crowther) → B1 (Moore) ⇄ B1(2) (Willes)</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <div class="coach-box">
+        <label for="coachInput">Editing as</label>
+        <input id="coachInput" type="text" placeholder="Your name" />
+        <label for="affiliationSelect">Team</label>
+        <select id="affiliationSelect">
+          <option value="">Select…</option>
+          <option value="A1">A1 – Crane</option>
+          <option value="A2">A2 – Crowther</option>
+          <option value="B1">B1 – Moore</option>
+          <option value="B1-2">B1(2) – Willes</option>
+          <option value="other">Other / League</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="primary" id="addPlayerBtn">+ Add player</button>
+        <button id="importBtn">Import list</button>
+        <button id="tableViewBtn">Table view</button>
+        <button id="logBtn">Change log</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="loadingNote" class="loading-note">Loading roster…</div>
+  <div class="board" id="board" style="display:none;"></div>
+  <div id="tableViewWrap" style="display:none;"></div>
+</div>
+
+<div id="modalRoot"></div>
+<div class="log-panel" id="logPanel">
+  <div class="log-head">
+    <h3>Change log</h3>
+    <button class="ghost" id="closeLogBtn">Close ✕</button>
+  </div>
+  <div class="log-body" id="logBody"></div>
+</div>
+<div class="status-msg" id="statusMsg"></div>
+
+<script>
+(function(){
+  // ============================================================
+  // STORAGE SETUP — needed because this file is self-hosted
+  // (GitHub Pages, etc.) rather than viewed inside Claude.ai.
+  //
+  // 1) Paste your Firebase Realtime Database URL below.
+  // 2) That's it — everything else in the app already talks to
+  //    window.storage, so this one block is the only wiring needed.
+  //
+  // If you ever DO view this file inside a Claude.ai artifact panel,
+  // this block quietly steps aside and lets Claude's own storage
+  // bridge handle things instead — no need to touch anything.
+  // ============================================================
+  const FIREBASE_DB_URL = 'https://westlake-draft-board-default-rtdb.firebaseio.com'; // e.g. https://westlake-draft-board-default-rtdb.firebaseio.com
+
+  const FIREBASE_CONFIGURED = FIREBASE_DB_URL && !FIREBASE_DB_URL.includes('PASTE_YOUR');
+
+  if(typeof window.storage === 'undefined' && FIREBASE_CONFIGURED){
+    const dbUrl = FIREBASE_DB_URL.replace(/\/$/, '');
+    const LOCAL_PREFIX = 'wlthunder_';
+    window.storage = {
+      async get(key, shared){
+        if(!shared){
+          const raw = localStorage.getItem(LOCAL_PREFIX + key);
+          if(raw === null) throw new Error('not found');
+          return { key, value: raw, shared: false };
+        }
+        const res = await fetch(`${dbUrl}/${encodeURIComponent(key)}.json`);
+        if(!res.ok) throw new Error('Firebase read failed: ' + res.status);
+        const data = await res.json();
+        if(data === null) throw new Error('not found');
+        return { key, value: data, shared: true };
+      },
+      async set(key, value, shared){
+        if(!shared){
+          localStorage.setItem(LOCAL_PREFIX + key, value);
+          return { key, value, shared: false };
+        }
+        const res = await fetch(`${dbUrl}/${encodeURIComponent(key)}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(value)
+        });
+        if(!res.ok) throw new Error('Firebase write failed: ' + res.status);
+        return { key, value, shared: true };
+      },
+      async delete(key, shared){
+        if(!shared){
+          localStorage.removeItem(LOCAL_PREFIX + key);
+          return { key, deleted: true, shared: false };
+        }
+        const res = await fetch(`${dbUrl}/${encodeURIComponent(key)}.json`, { method: 'DELETE' });
+        if(!res.ok) throw new Error('Firebase delete failed: ' + res.status);
+        return { key, deleted: true, shared: true };
+      },
+      async list(prefix, shared){
+        return { keys: [], prefix, shared: !!shared }; // not used by this app
+      }
+    };
+  }
+
+  const TEAMS = [
+    {key:'A1', label:'A1', coach:'Coach Crane', order:'1st pick', min:15, max:25},
+    {key:'A2', label:'A2', coach:'Coach Crowther', order:'2nd pick', min:15, max:25},
+    {key:'B1', label:'B1', coach:'Coach Moore', order:'Draft (snake)', min:15, max:25},
+    {key:'B1-2', label:'B1 (2)', coach:'Coach Willes', order:'Draft (snake)', min:15, max:25},
+  ];
+  const POSITIONS = ['QB','RB','WR','TE','OL','DL','LB','CB','S','K/P','ATH'];
+
+  const ROSTER_SEED = [
+    {name:'Caden Avery', status:'new', weight:'165', parentName:'Ryan Avery', parentPhone:'(385) 439-6329', parentEmail:'ravery@alpinedistrict.org', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Easton Bartholomew', status:'returning', weight:'118', parentName:'Heather Bartholomew', parentPhone:'(801) 369-6111', parentEmail:'sk8heather@gmail.com'},
+    {name:'Bronson Boyack', status:'new', weight:'163', parentName:'Robert Boyack', parentPhone:'(916) 996-7908', parentEmail:'rnboyack@msn.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Christian Butterworth', status:'returning', weight:'114', parentName:'Jake Butterworth', parentPhone:'(925) 344-2518', parentEmail:'jacobdbutterworth@gmail.com'},
+    {name:'Quincy Cannon', status:'returning', weight:'120', parentName:'Jake Cannon', parentPhone:'(385) 231-7258', parentEmail:'Jacobcannon86@gmail.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Jeffrey Carlsen', status:'new', weight:'77', parentName:'Ashley Carlsen', parentPhone:'(801) 362-1652', parentEmail:'abcarlsen@gmail.com'},
+    {name:'Kaden Carney', status:'returning', weight:'165', parentName:'Tisha Carney', parentPhone:'(970) 589-1628', parentEmail:'tcarney2009@gmail.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Isaiah Castanon', status:'returning', weight:'110', parentName:'Karla Lainez', parentPhone:'(801) 503-7751', parentEmail:'karlajackelinelainez@yahoo.com'},
+    {name:'Weston Catmull', status:'returning', weight:'154', parentName:'Colby Catmull', parentPhone:'(801) 557-9353', parentEmail:'duramaxpower32@yahoo.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Jordan Christensen', status:'returning', weight:'105', parentName:'Sheridan Christensen', parentPhone:'(801) 368-0995', parentEmail:'rubyq68@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Ezra Cid', status:'returning', weight:'', parentName:'Larissa Rodriguez', parentPhone:'(801) 427-3226', parentEmail:'Larissa_rodriguez@outlook.com'},
+    {name:'Benjamin Cousins', status:'returning', weight:'110', parentName:'Kate Cousins', parentPhone:'(801) 623-8890', parentEmail:'kate.m.cousins@gmail.com'},
+    {name:'Stockton Crane', status:'returning', weight:'141', parentName:'Corbin Crane', parentPhone:'(801) 661-6991', parentEmail:'ccrane@orchardmed.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Jett Crowther', status:'returning', weight:'90', parentName:'Taylor Crowther', parentPhone:'(801) 694-9651', parentEmail:'taylorcrowther24@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Henry Curfew', status:'returning', weight:'132', parentName:'Emily Curfew', parentPhone:'(801) 441-9700', parentEmail:'emilycurfew@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Tanner Dansie', status:'returning', weight:'154', parentName:'Brett Dansie', parentPhone:'(801) 550-3053', parentEmail:'brett.dansie@gmail.com', team:'A1', prefs:{A1:'bubble'}},
+    {name:'Nyxon Deppe', status:'returning', weight:'', parentName:'Jenna Willes', parentPhone:'(801) 836-3097', parentEmail:'jennawilles33@gmail.com'},
+    {name:'Caden Espersen', status:'returning', weight:'107', parentName:'Christie Espersen', parentPhone:'(801) 602-2314', parentEmail:'Espersenfamily@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Rocco Espinel', status:'returning', weight:'110', parentName:'Lyndsi Espinel', parentPhone:'(801) 835-1696', parentEmail:'Lyndsibree@gmail.com'},
+    {name:'Maluelue Faaliliu', status:'returning', weight:'185', parentName:'Chris Faaliliu', parentPhone:'(801) 680-1697', parentEmail:'cgfaaliliu54@yahoo.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Colton Fielding', status:'returning', weight:'125', parentName:'Lauren Fielding', parentPhone:'(623) 341-3645', parentEmail:'Lapratt@gmail.com'},
+    {name:'Kolo Fine', status:'returning', weight:'150', parentName:'Traci Fine', parentPhone:'(702) 785-4628', parentEmail:'tracilfine@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Wesley Fisher', status:'returning', weight:'134', parentName:'Stefanie Fisher', parentPhone:'(801) 360-3952', parentEmail:'Kylerstef3@aol.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Tevyn Fowler', status:'returning', weight:'', parentName:'Siboney Fowler', parentPhone:'(801) 860-8106', parentEmail:'fowlercs@gmail.com'},
+    {name:'Johnny Garzarella', status:'new', weight:'137', parentName:'Nicole Underwood', parentPhone:'(385) 312-6958', parentEmail:'Nic.riverside@outlook.com'},
+    {name:'Riley Gutierrez', status:'returning', weight:'125', parentName:'Tiffany Gutierrez', parentPhone:'(951) 858-0295', parentEmail:'mannyandtiffany@gmail.com', team:'A1', prefs:{A1:'bubble'}},
+    {name:'Covey Hansen', status:'returning', weight:'75', parentName:'Andrea Hansen', parentPhone:'(801) 836-3121', parentEmail:'Anniemarie22@gmail.com'},
+    {name:'Ryker Hoge', status:'returning', weight:'146', parentName:'Amy Hoge', parentPhone:'(801) 865-5980', parentEmail:'Sisterharveyrocks@yahoo.com', team:'A1', prefs:{A1:'bubble'}},
+    {name:'Brayden Hollist', status:'returning', weight:'125', parentName:'Tyler Hollist', parentPhone:'(503) 442-9290', parentEmail:'tylerhollist@gmail.com'},
+    {name:'Mason Howe', status:'returning', weight:'', parentName:'Jessica Howe', parentPhone:'(801) 360-9487', parentEmail:'jessmariehowe@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Imad Iddrisu', status:'new', weight:'110', parentName:'Iddrisu Abdulai', parentPhone:'(801) 427-8880', parentEmail:'sungsim.ia@gmail.com'},
+    {name:'Joshua Imel', status:'returning', weight:'145', parentName:'Nathan Imel', parentPhone:'(801) 793-4136', parentEmail:'n.imel@icloud.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Kaiden Irvine', status:'new', weight:'89', parentName:'Calestie Irvine', parentPhone:'(801) 870-5132', parentEmail:'calestieirvine@gmail.com'},
+    {name:'Deagan Jarman', status:'returning', weight:'140', parentName:'Mike Jarman', parentPhone:'(801) 369-8145', parentEmail:'mikecjarman81@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Max Jarvis', status:'returning', weight:'160', parentName:'Jamie Jarvis', parentPhone:'(801) 368-0033', parentEmail:'jamiemjarvis@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Carter Jones', status:'returning', weight:'115', parentName:'Cristin Jones', parentPhone:'(801) 518-7418', parentEmail:'houseofcrisscott@gmail.com'},
+    {name:'Kinga Kaveinga', status:'new', weight:'170', parentName:'Elizabeth Kaveinga', parentPhone:'(385) 338-1987', parentEmail:'efinau10@gmail.com', team:'A1', prefs:{A1:'bubble'}},
+    {name:'Tevita Kelly', status:'new', weight:'174', parentName:'Felicia Kelly', parentPhone:'(385) 602-8749', parentEmail:'Fkelly7413@gmail.com', team:'A1', prefs:{A1:'bubble'}},
+    {name:'Cooper Kingston', status:'returning', weight:'220', parentName:'Landon Kingston', parentPhone:'(940) 390-8485', parentEmail:'landon.j.kingston@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Ryan Kipp', status:'returning', weight:'98', parentName:'David Kipp', parentPhone:'(801) 703-6231', parentEmail:'david.kipp42@gmail.com'},
+    {name:'Braxton Lee', status:'returning', weight:'', parentName:'Nicole Lee', parentPhone:'(801) 836-7072', parentEmail:'nlee82804@gmail.com'},
+    {name:'Ben Libberton', status:'returning', weight:'116', parentName:'Nicole Libberton', parentPhone:'(801) 592-9839', parentEmail:'nikkilibb@yahoo.com'},
+    {name:'Isaac Lloyd', status:'returning', weight:'220', parentName:'Kyle Lloyd', parentPhone:'(801) 910-1388', parentEmail:'kyle.d.lloyd@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Colt Lyman', status:'returning', weight:'', parentName:'Dominic Lyman', parentPhone:'(801) 842-4147', parentEmail:'DominicLyman@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Dylan Mangus', status:'returning', weight:'119', parentName:'Kiley Mangus', parentPhone:'(801) 404-4411', parentEmail:'kileymangus@gmail.com', team:'A1', prefs:{A1:'bubble'}},
+    {name:'Jack McClellan', status:'returning', weight:'160', parentName:'Brittney McClellan', parentPhone:'(801) 362-0545', parentEmail:'brittmcclellan@hotmail.com'},
+    {name:'Lucas McClellan', status:'new', weight:'140', parentName:'Cade McClellan', parentPhone:'(435) 668-5052', parentEmail:'Cade.McClellan@gmail.com'},
+    {name:'Braunx McKenzie', status:'returning', weight:'155', parentName:'BJ McKenzie', parentPhone:'(801) 682-3431', parentEmail:'bjmckenzie1986@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Maverick Moore', status:'returning', weight:'120', parentName:'James Moore', parentPhone:'(385) 351-5305', parentEmail:'moorejah@gmail.com'},
+    {name:'Benson Morgan', status:'returning', weight:'125', parentName:'Tyler Morgan', parentPhone:'(702) 704-5573', parentEmail:'tymorgan45@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Skyler Morris', status:'new', weight:'135', parentName:'Amy Morris', parentPhone:'(801) 318-1050', parentEmail:'healthiscultivated@gmail.com'},
+    {name:'David Mounga', status:'returning', weight:'155', parentName:'Cindy Mounga', parentPhone:'(801) 634-1331', parentEmail:'moungacindy@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Kaniela Mullins', status:'returning', weight:'125', parentName:'Jasmine Mullins', parentPhone:'(435) 229-6800', parentEmail:'jasminemullins11511@gmail.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Breckin Nielson', status:'new', weight:'125', parentName:'Charae Nielson', parentPhone:'(801) 971-1965', parentEmail:'charae11@gmail.com'},
+    {name:'J.r. Olsen', status:'returning', weight:'145', parentName:'Robert Olsen', parentPhone:'(385) 208-7116', parentEmail:'robertjolsen1@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Bridger Ovard', status:'returning', weight:'97', parentName:'Hope Ovard', parentPhone:'(801) 310-3963', parentEmail:'hopeovard@gmail.com'},
+    {name:'Jack Pease', status:'returning', weight:'180', parentName:'Leigh Pease', parentPhone:'(801) 792-8063', parentEmail:'runnergirl90@hotmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Aloysius Pope', status:'returning', weight:'120', parentName:'Joshua Pope', parentPhone:'(801) 318-2882', parentEmail:'joshmpope@gmail.com'},
+    {name:'Breckon Prestwich', status:'returning', weight:'160', parentName:'Erica Prestwich', parentPhone:'(801) 473-3916', parentEmail:'ericaprestwich@gmail.com'},
+    {name:'Elijah Reyes', status:'returning', weight:'2', parentName:'Israel Reyes', parentPhone:'(385) 307-8009', parentEmail:'izzisra@gmail.com'},
+    {name:'Bennett Rosse', status:'returning', weight:'93', parentName:'Jenifer Rosse', parentPhone:'(605) 415-6058', parentEmail:'rossefamilyemail@gmail.com'},
+    {name:'Jaxon Rutland', status:'returning', weight:'98', parentName:'Melinda Rutland', parentPhone:'(801) 918-5142', parentEmail:'melinda.rutland1@gmail.com'},
+    {name:'Duke Rykert', status:'new', weight:'171', parentName:'Krista Rykert', parentPhone:'(801) 367-9684', parentEmail:'krista.rykert@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Jon Sagastume', status:'new', weight:'155', parentName:'Jorge Sagastume', parentPhone:'(801) 735-5109', parentEmail:'jorgesags@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Kingston Saluone', status:'returning', weight:'155', parentName:'Brooke Saluone', parentPhone:'(801) 319-5714', parentEmail:'bsaluone@yahoo.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Owen Scoresby', status:'new', weight:'', parentName:'Jon Scoresby', parentPhone:'(812) 361-5708', parentEmail:'scores78@yahoo.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Nolan Scoville', status:'returning', weight:'115', parentName:'Summer Scoville', parentPhone:'(801) 358-2414', parentEmail:'summerscoville@gmail.com'},
+    {name:'Adam Stallard', status:'returning', weight:'135', parentName:'Britany Havens', parentPhone:'(760) 718-8005', parentEmail:'Austinsmom613@hotmail.com'},
+    {name:'Benson Stinger', status:'returning', weight:'89', parentName:'Maggie Stinger', parentPhone:'(515) 720-3147', parentEmail:'Maggie.stinger@icloud.com'},
+    {name:'Marius Stott', status:'returning', weight:'118', parentName:'Annabelle Stott', parentPhone:'(801) 655-3361', parentEmail:'bellestott@gmail.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Julian Strickland', status:'returning', weight:'100', parentName:'Bethany Strickland', parentPhone:'(801) 885-6381', parentEmail:'bfairbank53@gmail.com'},
+    {name:'Landon Sullenberger', status:'returning', weight:'', parentName:'Danielle Sullenberger', parentPhone:'(435) 459-9038', parentEmail:'daniellesullenberger@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Nixon Thain', status:'returning', weight:'100', parentName:'Gavin Thain', parentPhone:'(801) 598-1161', parentEmail:'gavinthain82@hotmail.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Lihai-tuihoua Thomas', status:'returning', weight:'130', parentName:'Larry Thomas', parentPhone:'(801) 472-0083', parentEmail:'lthomas@j-msteel.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Gage Thuet', status:'new', weight:'99', parentName:'Mike Thuet', parentPhone:'(801) 615-9726', parentEmail:'Mikethuet@gmail.com'},
+    {name:'Elijah Toutai', status:'returning', weight:'150', parentName:'Kevin Toutai', parentPhone:'(385) 484-1660', parentEmail:'k_toutai@yahoo.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Dashten Turnbow', status:'new', weight:'95', parentName:'Cameron Turnbow', parentPhone:'(435) 703-1003', parentEmail:'jenreb82@yahoo.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Brody Vickers', status:'returning', weight:'155', parentName:'Jaymin Vickers', parentPhone:'(801) 712-8899', parentEmail:'jayvick84@gmail.com', team:'A1', prefs:{A1:'want'}},
+    {name:'Beckett Warburton', status:'returning', weight:'', parentName:'Kim Warburton', parentPhone:'(801) 358-2390', parentEmail:'Kimtracy86@gmail.com'},
+    {name:'Matthew Whiting', status:'new', weight:'200', parentName:'Christopher Whiting', parentPhone:'(891) 655-3999', parentEmail:'tufferw@gmail.com', team:'A2', prefs:{A2:'want'}},
+    {name:'Zander Wilkinson', status:'returning', weight:'130', parentName:'Justine Wilkinson', parentPhone:'(480) 273-9586', parentEmail:'Justinejensen@ymail.com'},
+    {name:'Ryker Woodhouse', status:'returning', weight:'105', parentName:'Danny Woodhouse', parentPhone:'(435) 668-3226', parentEmail:'dannyw@sagepest.com', team:'A2', prefs:{A2:'bubble'}},
+    {name:'Terry Zazueta', status:'returning', weight:'94', parentName:'Ricky Zazueta', parentPhone:'(801) 505-1099', parentEmail:'rickyzazu619@gmail.com'},
+    {name:'Isak Fetuao', status:'new', weight:'129', parentName:'', parentPhone:'', parentEmail:'', team:'A2', prefs:{A2:'bubble'}}
+  ];
+
+  const MAIN_COACH_LASTNAMES = {A1:'crane', A2:'crowther', B1:'moore', 'B1-2':'willes'};
+  function matchMainCoach(name){
+    const n = (name||'').toLowerCase();
+    for(const key of Object.keys(MAIN_COACH_LASTNAMES)){
+      if(n.includes(MAIN_COACH_LASTNAMES[key])) return key;
+    }
+    return null;
+  }
+
+  let players = [];
+  let log = [];
+  let coachName = '';
+  let coachAffiliation = '';
+  let filterText = '';
+  let filterStatus = 'all';
+  let filterPos = 'all';
+  let draggingId = null;
+  const IS_TOUCH = !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches);
+  let collapsedTeams = {};
+  let expandedCards = new Set();
+  let currentView = 'board';
+  let teamLocks = {};
+
+  const TABLE_COLUMNS = [
+    {key:'name', label:'Name', type:'text', sortable:true},
+    {key:'status', label:'Status', type:'select', options:['new','returning'], sortable:true},
+    {key:'team', label:'Team', type:'select', options:['pool','A1','A2','B1','B1-2'], sortable:true},
+    {key:'positions', label:'Positions', type:'text', sortable:true},
+    {key:'height', label:'Height', type:'text', sortable:false},
+    {key:'weight', label:'Weight', type:'text', sortable:true},
+    {key:'speed40', label:'40yd', type:'text', sortable:true},
+    {key:'vertical', label:'Vert', type:'text', sortable:true},
+    {key:'shuttle', label:'Shuttle', type:'text', sortable:true},
+    {key:'xman', label:'X-Man', type:'select', options:['yes','no'], sortable:true},
+    {key:'parentName', label:'Parent', type:'text', sortable:true},
+    {key:'parentPhone', label:'Phone', type:'text', sortable:false},
+    {key:'parentEmail', label:'Email', type:'text', sortable:false},
+    {key:'notes', label:'Notes', type:'text', sortable:false},
+  ];
+  let tableSort = {col:'name', dir:'asc'};
+  let tableFilters = {};
+  TABLE_COLUMNS.forEach(c=> tableFilters[c.key] = '');
+
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $all = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  function uid(){ return 'p_' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
+
+  function resizeImageFile(file, maxDim){
+    maxDim = maxDim || 320;
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        const img = new Image();
+        img.onload = ()=>{
+          let w = img.width, h = img.height;
+          if(w > h){ if(w > maxDim){ h = Math.round(h * (maxDim / w)); w = maxDim; } }
+          else { if(h > maxDim){ w = Math.round(w * (maxDim / h)); h = maxDim; } }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showStatus(msg){
+    const el = $('#statusMsg');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(showStatus._t);
+    showStatus._t = setTimeout(()=> el.classList.remove('show'), 2200);
+  }
+
+  // ---------------- STORAGE ----------------
+  async function loadAll(){
+    try{
+      const p = await window.storage.get('players', true);
+      players = p && p.value ? JSON.parse(p.value) : seedPlayers();
+    }catch(e){
+      players = seedPlayers();
+      try{ await window.storage.set('players', JSON.stringify(players), true); }catch(e2){}
+    }
+    try{
+      const l = await window.storage.get('draft_log', true);
+      log = l && l.value ? JSON.parse(l.value) : [];
+    }catch(e){ log = []; }
+
+    try{
+      const tl = await window.storage.get('team_locks', true);
+      teamLocks = tl && tl.value ? JSON.parse(tl.value) : {};
+    }catch(e){ teamLocks = {}; }
+
+    try{
+      const c = await window.storage.get('coach_name', false);
+      coachName = c && c.value ? c.value : '';
+    }catch(e){ coachName = ''; }
+    $('#coachInput').value = coachName;
+
+    try{
+      const a = await window.storage.get('coach_affiliation', false);
+      coachAffiliation = a && a.value ? a.value : '';
+    }catch(e){ coachAffiliation = ''; }
+    updateAffiliationUI();
+  }
+
+  function updateAffiliationUI(){
+    const sel = $('#affiliationSelect');
+    const matched = matchMainCoach(coachName);
+    if(matched){
+      sel.value = matched;
+      sel.disabled = true;
+      coachAffiliation = matched;
+    } else {
+      sel.disabled = false;
+      sel.value = coachAffiliation || '';
+    }
+  }
+
+  function hasIdentity(){
+    if(!coachName || !coachName.trim()) return false;
+    const matched = matchMainCoach(coachName);
+    if(!matched && !coachAffiliation) return false;
+    return true;
+  }
+
+  // Shown once, right after the password gate, before the board is interactive.
+  // Nothing else is open at this point, so there's no other window to conflict with.
+  function openWelcomeIdentityModal(onDone){
+    const root = $('#modalRoot');
+    root.innerHTML = `
+      <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+          <h3>Who's on the board today?</h3>
+          <p style="font-size:13px;color:#5b5548;margin:-6px 0 12px;">Enter your name once — we'll remember you on this device so every change you make is logged correctly.</p>
+          <div class="field"><label>Your name</label><input id="welcome-name" type="text" placeholder="Your name" /></div>
+          <div class="field" id="welcome-aff-field"><label>Team affiliation</label>
+            <select id="welcome-affiliation">
+              <option value="">Select…</option>
+              <option value="A1">A1 – Crane</option>
+              <option value="A2">A2 – Crowther</option>
+              <option value="B1">B1 – Moore</option>
+              <option value="B1-2">B1(2) – Willes</option>
+              <option value="other">Other / League</option>
+            </select>
+          </div>
+          <div class="modal-actions">
+            <div></div>
+            <div class="right">
+              <button class="primary" id="welcome-continue">Continue</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    function refreshAffVisibility(){
+      const matched = matchMainCoach($('#welcome-name').value);
+      $('#welcome-aff-field').style.display = matched ? 'none' : 'block';
+    }
+    refreshAffVisibility();
+    $('#welcome-name').addEventListener('input', refreshAffVisibility);
+    $('#welcome-name').focus();
+    $('#welcome-continue').addEventListener('click', ()=>{
+      const name = $('#welcome-name').value.trim();
+      if(!name){ showStatus('Enter your name to continue'); $('#welcome-name').focus(); return; }
+      const matched = matchMainCoach(name);
+      let aff = matched;
+      if(!matched){
+        aff = $('#welcome-affiliation').value;
+        if(!aff){ showStatus('Select your team affiliation to continue'); $('#welcome-affiliation').focus(); return; }
+      }
+      coachName = name;
+      coachAffiliation = aff;
+      $('#coachInput').value = coachName;
+      updateAffiliationUI();
+      closeModal();
+      onDone();
+      try{
+        window.storage.set('coach_name', coachName, false).catch(()=>{});
+        window.storage.set('coach_affiliation', coachAffiliation, false).catch(()=>{});
+      }catch(e){ /* storage not available yet — identity still works for this session */ }
+    });
+    // Enter key submits, same as clicking Continue
+    root.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ $('#welcome-continue').click(); } });
+  }
+
+  function getLoggedName(){
+    const matched = matchMainCoach(coachName);
+    const name = coachName.trim() || 'Unknown coach';
+    if(matched) return name;
+    if(coachAffiliation === 'other') return `${name} [Other/League]`;
+    const t = TEAMS.find(tt=>tt.key===coachAffiliation);
+    return t ? `${name} [${t.label}]` : name;
+  }
+
+  async function savePlayers(){
+    try{
+      await window.storage.set('players', JSON.stringify(players), true);
+    }catch(e){ showStatus('⚠ Could not save — check connection'); }
+  }
+
+  async function saveLog(){
+    if(log.length > 400) log = log.slice(0, 400);
+    try{
+      await window.storage.set('draft_log', JSON.stringify(log), true);
+    }catch(e){ /* non-fatal */ }
+  }
+
+  async function saveTeamLocks(){
+    try{
+      await window.storage.set('team_locks', JSON.stringify(teamLocks), true);
+    }catch(e){ showStatus('⚠ Could not save lock status — check connection'); }
+  }
+
+  function addLog(action){
+    const who = getLoggedName();
+    log.unshift({ ts: new Date().toISOString(), coach: who, action });
+    saveLog();
+    if($('#logPanel').classList.contains('open')) renderLog();
+  }
+
+  function seedPlayers(){
+    return ROSTER_SEED.map(s => ({
+      id: uid(), name: s.name, status: s.status, team: s.team || 'pool',
+      positions: [], height:'', weight: s.weight, speed40:'', vertical:'', shuttle:'', notes:'',
+      parentName: s.parentName || '', parentPhone: s.parentPhone || '', parentEmail: s.parentEmail || '',
+      prefs: s.prefs ? Object.assign({}, s.prefs) : {}
+    }));
+  }
+
+  // ---------------- RENDER ----------------
+  function playerMatchesFilter(p){
+    if(filterStatus !== 'all' && p.status !== filterStatus) return false;
+    if(filterPos !== 'all' && !(p.positions||[]).includes(filterPos)) return false;
+    if(filterText.trim()){
+      const q = filterText.trim().toLowerCase();
+      if(!p.name.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }
+
+  function statLine(p){
+    const parts = [];
+    if(p.height) parts.push('HT ' + p.height);
+    if(p.weight) parts.push('WT ' + p.weight);
+    if(p.speed40) parts.push('40y ' + p.speed40 + 's');
+    if(p.vertical) parts.push('VJ ' + p.vertical + '"');
+    if(p.shuttle) parts.push('SH ' + p.shuttle + 's');
+    return parts.join('  ·  ');
+  }
+
+  function isXMan(p){
+    const w = parseFloat(p.weight);
+    return !isNaN(w) && w > 165;
+  }
+
+  function cyclePref(state){
+    if(!state) return 'want';
+    if(state === 'want') return 'bubble';
+    return null;
+  }
+
+  function renderCard(p){
+    const card = document.createElement('div');
+    const onTeamPref = (p.team !== 'pool' && p.prefs) ? p.prefs[p.team] : null;
+    card.className = 'card' + (onTeamPref === 'want' ? ' want-pick' : onTeamPref === 'bubble' ? ' bubble-pick' : '');
+    const cardTeamLocked = isTeamLocked(p.team);
+    card.draggable = !cardTeamLocked && !IS_TOUCH;
+    if(cardTeamLocked) card.title = `${teamDisplayLabel(p.team)} is locked in — unlock it first to move this player`;
+    card.dataset.id = p.id;
+
+    const isExpanded = expandedCards.has(p.id);
+    const posStr = (p.positions||[]).join(', ');
+    let prefsHtml = '';
+    TEAMS.forEach(t=>{
+      if(p.team === t.key) return; // own-team status is shown via the prominent Signed/Considered toggle instead
+      const state = p.prefs && p.prefs[t.key];
+      const cls = state === 'want' ? 'want' : state === 'bubble' ? 'bubble' : '';
+      const pillLocked = isTeamLocked(t.key);
+      const label = state === 'want' ? '★ ' + t.label : state === 'bubble' ? '? ' + t.label : t.label;
+      const lockTitle = pillLocked ? `${t.label} is locked in` : `Click to cycle ${t.label} interest: none → want → bubble`;
+      prefsHtml += `<span class="pref-pill ${cls}${pillLocked ? ' pill-locked' : ''}" data-team="${t.key}" title="${lockTitle}">${label}</span>`;
+    });
+
+    const onOwnTeam = p.team !== 'pool';
+    const isConsidered = onOwnTeam && onTeamPref === 'bubble';
+    const statusLabel = isConsidered ? '? Considered' : '✓ Signed';
+    const statusCls = isConsidered ? 'considered' : 'signed';
+
+    const hasExtra = !!(statLine(p) || p.notes);
+    const xman = isXMan(p);
+    card.innerHTML = `
+      <div class="card-actions">
+        ${hasExtra ? `<button class="expand-toggle" title="${isExpanded ? 'Show less' : 'Show more'}">${isExpanded ? '▴' : '▾'}</button>` : ''}
+        <button class="move-btn" title="Move to another team">⇄</button>
+        <button class="edit-dot" title="Edit player">⋯</button>
+      </div>
+      <div class="card-top">
+        <div class="card-name-row">
+          <span class="card-name">${escapeHtml(p.name)}</span>
+          <span class="badge ${p.status}">${p.status === 'new' ? 'NEW' : 'RETURNING'}</span>
+          ${xman ? `<span class="badge xman" title="Over 165 lb — 8th grade X-Man rule: offensive line only on offense">X-MAN</span>` : ''}
+        </div>
+        <div class="card-right">
+          ${posStr ? `<span class="positions-inline">${escapeHtml(posStr)}</span>` : ''}
+          ${onOwnTeam ? `<button class="status-btn ${statusCls}" title="Click to switch between Signed and Considered">${statusLabel}</button>` : ''}
+        </div>
+      </div>
+      <div class="pref-row">${prefsHtml}</div>
+      <div class="extra-info${isExpanded ? ' open' : ''}">
+        ${statLine(p) ? `<div class="stat-row">${escapeHtml(statLine(p))}</div>` : ''}
+        ${p.notes ? `<div class="notes-row">${escapeHtml(p.notes)}</div>` : ''}
+      </div>
+    `;
+
+    card.addEventListener('dragstart', (e)=>{
+      draggingId = p.id;
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', p.id);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', ()=>{ card.classList.remove('dragging'); draggingId = null; });
+
+    $('.edit-dot', card).addEventListener('click', (e)=>{ e.stopPropagation(); openEditModal(p.id); });
+    $('.move-btn', card).addEventListener('click', (e)=>{ e.stopPropagation(); openMoveModal(p.id); });
+
+    const expandBtn = $('.expand-toggle', card);
+    if(expandBtn){
+      expandBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(expandedCards.has(p.id)) expandedCards.delete(p.id); else expandedCards.add(p.id);
+        renderBoard();
+      });
+    }
+
+    const statusBtn = $('.status-btn', card);
+    if(statusBtn){
+      statusBtn.addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        if(isTeamLocked(p.team)){
+          showStatus(`${teamDisplayLabel(p.team)} is locked in — unlock it first to change status`);
+          return;
+        }
+        const player = players.find(pp=>pp.id===p.id);
+        if(!player.prefs) player.prefs = {};
+        const next = player.prefs[player.team] === 'bubble' ? 'want' : 'bubble';
+        player.prefs[player.team] = next;
+        await savePlayers();
+        addLog(`marked ${player.name} as ${next === 'want' ? 'Confirmed/Signed' : 'Bubble/Considered'} on ${teamDisplayLabel(player.team)}`);
+        renderBoard();
+      });
+    }
+
+    $all('.pref-pill', card).forEach(pill=>{
+      pill.addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        const teamKey = pill.dataset.team;
+        if(isTeamLocked(teamKey)){
+          showStatus(`${teamDisplayLabel(teamKey)} is locked in — unlock it first to change tags`);
+          return;
+        }
+        const player = players.find(pp=>pp.id===p.id);
+        if(!player.prefs) player.prefs = {};
+        const newState = cyclePref(player.prefs[teamKey]);
+        if(newState) player.prefs[teamKey] = newState; else delete player.prefs[teamKey];
+        await savePlayers();
+        addLog(`marked ${player.name} as ${newState ? newState.toUpperCase() : 'no preference'} for ${teamKey}`);
+        renderBoard();
+      });
+    });
+
+    return card;
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function renderBoard(){
+    const board = $('#board');
+    board.innerHTML = '';
+
+    // ---- TEAMS AREA (left, main) ----
+    const teamsArea = document.createElement('div');
+    teamsArea.className = 'teams-area';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'teams-toolbar';
+    toolbar.innerHTML = `<button class="small" id="expandAllBtn">Expand all</button><button class="small" id="collapseAllBtn">Minimize all</button>`;
+    teamsArea.appendChild(toolbar);
+
+    const teamsGrid = document.createElement('div');
+    teamsGrid.className = 'teams-grid';
+    TEAMS.forEach(t=>{
+      const teamPlayers = players.filter(p=>p.team===t.key && playerMatchesFilter(p));
+      teamPlayers.sort((a,b)=>{
+        const ab = (a.prefs && a.prefs[t.key]==='bubble') ? 1 : 0;
+        const bb = (b.prefs && b.prefs[t.key]==='bubble') ? 1 : 0;
+        return ab - bb;
+      });
+      const total = players.filter(p=>p.team===t.key).length;
+      const wantCount = players.filter(p=>p.team===t.key && p.prefs && p.prefs[t.key]==='want').length;
+      const bubbleCount = players.filter(p=>p.team===t.key && p.prefs && p.prefs[t.key]==='bubble').length;
+      let countClass = '';
+      if(total > t.max) countClass = 'warn';
+      else if(total < t.min) countClass = 'low';
+      const isCollapsed = !!collapsedTeams[t.key];
+      const lockInfo = teamLocks[t.key];
+      const isLocked = !!(lockInfo && lockInfo.locked);
+
+      const col = document.createElement('div');
+      col.className = 'col-panel' + (isCollapsed ? ' collapsed' : '') + (isLocked ? ' team-locked' : '');
+      col.innerHTML = `
+        <div class="col-head">
+          <div class="name-row">
+            <div>
+              <h2>${t.label}</h2>
+              <span class="coach-name">${t.coach}</span>
+            </div>
+            <span class="pick-order">${t.order}</span>
+          </div>
+          <div class="count-line">
+            <span class="count-pill ${countClass}">${total}</span>
+            <span class="tag-count">✓ ${wantCount} signed</span>
+            <span class="tag-count">? ${bubbleCount} considered</span>
+            <button class="small ghost lock-btn${isLocked ? ' locked' : ''}" data-team="${t.key}">${isLocked ? '🔒 Locked — Unlock' : '🔓 Lock in team'}</button>
+            <button class="small ghost collapse-toggle" data-team="${t.key}">${isCollapsed ? 'Maximize ▾' : 'Minimize ▴'}</button>
+          </div>
+        </div>
+        ${isLocked ? `<div class="locked-banner"><span>✅ FINALIZED by ${escapeHtml(lockInfo.by || 'a coach')}</span><span class="when">${formatWhen(lockInfo.at)}</span></div>` : ''}
+        <div class="col-body" id="col-${t.key}"></div>
+      `;
+      teamsGrid.appendChild(col);
+      const body = $(`#col-${t.key}`, col);
+      if(teamPlayers.length===0){ body.innerHTML = '<div class="empty-hint">Drag players here.</div>'; }
+      teamPlayers.forEach(p=> body.appendChild(renderCard(p)));
+      setupDropzone(body, t.key);
+
+      $('.collapse-toggle', col).addEventListener('click', ()=>{
+        collapsedTeams[t.key] = !collapsedTeams[t.key];
+        renderBoard();
+      });
+
+      $('.lock-btn', col).addEventListener('click', async ()=>{
+        if(isLocked){
+          delete teamLocks[t.key];
+          await saveTeamLocks();
+          addLog(`unlocked ${t.label}'s roster`);
+        } else {
+          teamLocks[t.key] = { locked: true, by: getLoggedName(), at: new Date().toISOString() };
+          await saveTeamLocks();
+          addLog(`locked in ${t.label}'s roster as finalized`);
+        }
+        renderBoard();
+      });
+    });
+    teamsArea.appendChild(teamsGrid);
+    board.appendChild(teamsArea);
+
+    $('#expandAllBtn', toolbar).addEventListener('click', ()=>{ collapsedTeams = {}; renderBoard(); });
+    $('#collapseAllBtn', toolbar).addEventListener('click', ()=>{
+      TEAMS.forEach(t=> collapsedTeams[t.key] = true);
+      renderBoard();
+    });
+
+    // ---- PLAYER POOL (right) ----
+    const poolCol = document.createElement('div');
+    poolCol.className = 'pool-col';
+    const poolPlayers = players.filter(p=>p.team==='pool' && playerMatchesFilter(p));
+    poolCol.innerHTML = `
+      <div class="col-panel">
+        <div class="col-head">
+          <div class="name-row"><h2>Player Pool</h2><span class="pick-order">${poolPlayers.length} shown</span></div>
+          <div class="pool-tools" style="margin-top:8px;">
+            <input type="text" id="searchInput" placeholder="Search name…" value="${escapeHtml(filterText)}"/>
+            <select id="statusFilter">
+              <option value="all">All players</option>
+              <option value="new">New only</option>
+              <option value="returning">Returning only</option>
+            </select>
+            <select id="posFilter">
+              <option value="all">All positions</option>
+              ${POSITIONS.map(pos=>`<option value="${pos}">${pos}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="col-body" id="col-pool"></div>
+      </div>
+    `;
+    board.appendChild(poolCol);
+    const poolBody = $('#col-pool', poolCol);
+    if(poolPlayers.length===0){ poolBody.innerHTML = '<div class="empty-hint">No players match. Adjust filters or add players.</div>'; }
+    poolPlayers.forEach(p=> poolBody.appendChild(renderCard(p)));
+    setupDropzone(poolBody, 'pool');
+
+    $('#searchInput', poolCol).value = filterText;
+    $('#searchInput', poolCol).addEventListener('input', e=>{ filterText = e.target.value; renderBoard(); preserveFocus('#searchInput'); });
+    $('#statusFilter', poolCol).value = filterStatus;
+    $('#statusFilter', poolCol).addEventListener('change', e=>{ filterStatus = e.target.value; renderBoard(); });
+    $('#posFilter', poolCol).value = filterPos;
+    $('#posFilter', poolCol).addEventListener('change', e=>{ filterPos = e.target.value; renderBoard(); });
+
+    if(currentView === 'table') renderTableView();
+  }
+
+  function preserveFocus(sel){
+    const el = $(sel);
+    if(el){ el.focus(); const v = el.value; el.value=''; el.value=v; }
+  }
+
+  function getColValue(p, key){
+    switch(key){
+      case 'name': return p.name || '';
+      case 'status': return p.status || '';
+      case 'team': return p.team || '';
+      case 'positions': return (p.positions||[]).join(', ');
+      case 'height': return p.height || '';
+      case 'weight': return p.weight || '';
+      case 'speed40': return p.speed40 || '';
+      case 'vertical': return p.vertical || '';
+      case 'shuttle': return p.shuttle || '';
+      case 'xman': return isXMan(p) ? 'yes' : 'no';
+      case 'parentName': return p.parentName || '';
+      case 'parentPhone': return p.parentPhone || '';
+      case 'parentEmail': return p.parentEmail || '';
+      case 'notes': return p.notes || '';
+      default: return '';
+    }
+  }
+
+  function teamDisplayLabel(key){
+    if(key === 'pool') return 'Pool';
+    const t = TEAMS.find(tt=>tt.key===key);
+    return t ? t.label : key;
+  }
+
+  function setView(view){
+    currentView = view;
+    $('#board').style.display = view === 'board' ? 'flex' : 'none';
+    $('#tableViewWrap').style.display = view === 'table' ? 'block' : 'none';
+    $('#tableViewBtn').textContent = view === 'board' ? 'Table view' : 'Board view';
+    if(view === 'table') renderTableView();
+  }
+
+  function renderTableView(){
+    const wrap = $('#tableViewWrap');
+    if(!wrap) return;
+    let rows = players.slice();
+
+    TABLE_COLUMNS.forEach(col=>{
+      const fval = tableFilters[col.key];
+      if(!fval) return;
+      rows = rows.filter(p=>{
+        const v = String(getColValue(p, col.key)).toLowerCase();
+        if(col.type === 'select') return v === fval.toLowerCase();
+        return v.includes(fval.toLowerCase());
+      });
+    });
+
+    rows.sort((a,b)=>{
+      const av = getColValue(a, tableSort.col);
+      const bv = getColValue(b, tableSort.col);
+      const an = parseFloat(av), bn = parseFloat(bv);
+      let cmp;
+      if(av !== '' && bv !== '' && !isNaN(an) && !isNaN(bn)){
+        cmp = an - bn;
+      } else {
+        cmp = String(av).localeCompare(String(bv));
+      }
+      return tableSort.dir === 'asc' ? cmp : -cmp;
+    });
+
+    const headHtml = '<tr>' + TABLE_COLUMNS.map(col=>{
+      const arrow = tableSort.col === col.key ? (tableSort.dir === 'asc' ? ' ▲' : ' ▼') : '';
+      return `<th data-col="${col.key}" class="${col.sortable ? 'sortable' : ''}">${escapeHtml(col.label)}${arrow}</th>`;
+    }).join('') + '</tr>';
+
+    const filterHtml = '<tr class="filter-row">' + TABLE_COLUMNS.map(col=>{
+      if(col.type === 'select'){
+        const opts = [{v:'', label:'All'}].concat(col.options.map(o=>({v:o, label: o==='pool' ? 'Pool' : (o.charAt(0).toUpperCase()+o.slice(1))})));
+        return `<th><select data-filter-col="${col.key}">${opts.map(o=>`<option value="${o.v}" ${tableFilters[col.key]===o.v ? 'selected' : ''}>${o.label}</option>`).join('')}</select></th>`;
+      }
+      return `<th><input type="text" data-filter-col="${col.key}" value="${escapeHtml(tableFilters[col.key])}" placeholder="Filter…" /></th>`;
+    }).join('') + '</tr>';
+
+    const bodyHtml = rows.map(p=>{
+      return `<tr data-id="${p.id}">` + TABLE_COLUMNS.map(col=>{
+        let val = getColValue(p, col.key);
+        if(col.key === 'team') val = teamDisplayLabel(val);
+        else if(col.key === 'status') val = val === 'new' ? 'New' : 'Returning';
+        else if(col.key === 'xman') val = val === 'yes' ? 'X-Man' : '';
+        const wrapCls = (col.key === 'notes' || col.key === 'positions') ? ' class="wrap-cell"' : '';
+        return `<td${wrapCls}>${escapeHtml(String(val))}</td>`;
+      }).join('') + '</tr>';
+    }).join('');
+
+    wrap.innerHTML = `
+      <div class="table-toolbar">
+        <span>${rows.length} of ${players.length} players — click a row to open that player's profile</span>
+        <button class="small ghost" id="clearTableFilters">Clear filters</button>
+      </div>
+      <div class="table-scroll">
+        <table class="player-table">
+          <thead>${headHtml}${filterHtml}</thead>
+          <tbody>${bodyHtml || `<tr><td colspan="${TABLE_COLUMNS.length}" class="empty-hint">No players match these filters.</td></tr>`}</tbody>
+        </table>
+      </div>
+    `;
+
+    $all('th.sortable', wrap).forEach(th=>{
+      th.addEventListener('click', ()=>{
+        const col = th.dataset.col;
+        if(tableSort.col === col){ tableSort.dir = tableSort.dir === 'asc' ? 'desc' : 'asc'; }
+        else { tableSort.col = col; tableSort.dir = 'asc'; }
+        renderTableView();
+      });
+    });
+
+    $all('[data-filter-col]', wrap).forEach(input=>{
+      const evtName = input.tagName === 'SELECT' ? 'change' : 'input';
+      input.addEventListener(evtName, (e)=>{
+        tableFilters[input.dataset.filterCol] = e.target.value;
+        renderTableView();
+        if(input.tagName !== 'SELECT'){
+          const fresh = wrap.querySelector(`[data-filter-col="${input.dataset.filterCol}"]`);
+          if(fresh){ fresh.focus(); const v = fresh.value; fresh.value=''; fresh.value=v; }
+        }
+      });
+    });
+
+    const clearBtn = $('#clearTableFilters', wrap);
+    if(clearBtn){
+      clearBtn.addEventListener('click', ()=>{
+        TABLE_COLUMNS.forEach(c=> tableFilters[c.key] = '');
+        renderTableView();
+      });
+    }
+
+    $all('tbody tr[data-id]', wrap).forEach(tr=>{
+      tr.addEventListener('click', ()=> openEditModal(tr.dataset.id));
+    });
+  }
+
+  function isTeamLocked(teamKey){
+    return !!(teamLocks[teamKey] && teamLocks[teamKey].locked);
+  }
+
+  function setupDropzone(el, teamKey){
+    el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('dragover'); });
+    el.addEventListener('dragleave', ()=> el.classList.remove('dragover'));
+    el.addEventListener('drop', async e=>{
+      e.preventDefault();
+      el.classList.remove('dragover');
+      const id = e.dataTransfer.getData('text/plain');
+      const player = players.find(p=>p.id===id);
+      if(!player) return;
+      if(player.team === teamKey) return;
+      if(isTeamLocked(teamKey)){
+        showStatus(`${teamDisplayLabel(teamKey)} is locked in — unlock it first to make changes`);
+        return;
+      }
+      if(isTeamLocked(player.team)){
+        showStatus(`${teamDisplayLabel(player.team)} is locked in — unlock it first to move this player`);
+        return;
+      }
+      const fromTeam = player.team;
+      player.team = teamKey;
+      if(teamKey !== 'pool'){
+        if(!player.prefs) player.prefs = {};
+        if(!player.prefs[teamKey]) player.prefs[teamKey] = 'want';
+      }
+      await savePlayers();
+      const toLabel = teamKey === 'pool' ? 'the pool' : teamKey;
+      const fromLabel = fromTeam === 'pool' ? 'the pool' : fromTeam;
+      addLog(`moved ${player.name} from ${fromLabel} to ${toLabel}`);
+      renderBoard();
+    });
+  }
+
+  // ---------------- LOG PANEL ----------------
+  function formatWhen(iso){
+    if(!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
+  }
+
+  function renderLog(){
+    const body = $('#logBody');
+    if(log.length===0){ body.innerHTML = '<div class="empty-hint">No changes yet.</div>'; return; }
+    body.innerHTML = log.map(entry=>{
+      const when = formatWhen(entry.ts);
+      return `<div class="log-entry"><span class="who">${escapeHtml(entry.coach)}</span> ${escapeHtml(entry.action)}<span class="when">${when}</span></div>`;
+    }).join('');
+  }
+
+  // ---------------- MODALS ----------------
+  function closeModal(){ $('#modalRoot').innerHTML = ''; }
+
+  function openEditModal(id){
+    const isNew = !id;
+    const p = isNew ? {id:null, name:'', status:'new', team:'pool', positions:[], height:'', weight:'', speed40:'', vertical:'', shuttle:'', notes:'', parentName:'', parentPhone:'', parentEmail:'', prefs:{}} : players.find(pp=>pp.id===id);
+    const root = $('#modalRoot');
+    root.innerHTML = `
+      <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+          <h3>${isNew ? 'Add player' : 'Edit player'}</h3>
+          <div class="field photo-field">
+            <label>Profile photo</label>
+            <div class="photo-row">
+              <img id="photoPreview" class="photo-preview" style="display:none;" alt="Player photo" />
+              <div class="photo-controls">
+                <input type="file" id="f-photo" accept="image/*" />
+                <button type="button" class="ghost small" id="removePhotoBtn" style="display:none;">Remove photo</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#5b5548;margin-top:4px;">Only shown here when you open this player's profile — never on the roster board.</div>
+          </div>
+          <div class="field"><label>Name</label><input id="f-name" type="text" value="${escapeHtml(p.name)}" /></div>
+          <div class="two-col">
+            <div class="field"><label>Status</label>
+              <select id="f-status">
+                <option value="new" ${p.status==='new'?'selected':''}>New</option>
+                <option value="returning" ${p.status==='returning'?'selected':''}>Returning</option>
+              </select>
+            </div>
+            <div class="field"><label>Current team</label>
+              <select id="f-team">
+                <option value="pool" ${p.team==='pool'?'selected':''}>Pool (unassigned)</option>
+                ${TEAMS.map(t=>`<option value="${t.key}" ${p.team===t.key?'selected':''}>${t.label} — ${t.coach}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Positions played</label>
+            <div style="font-size:11.5px;color:#5b5548;margin-bottom:5px;">Tap once for confirmed, tap again for potential/unsure (shows with *), tap again to clear.</div>
+            <div class="pos-check-grid" id="posGrid">
+              ${POSITIONS.map(pos=>{
+                const uncertain = (p.positions||[]).includes(pos+'*');
+                const on = !uncertain && (p.positions||[]).includes(pos);
+                const cls = on ? 'on' : uncertain ? 'uncertain' : '';
+                const label = uncertain ? pos + '*' : pos;
+                return `<span class="pos-check ${cls}" data-pos="${pos}">${label}</span>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="field"><label>Height</label><input id="f-height" type="text" placeholder="5'4&quot;" value="${escapeHtml(p.height||'')}" /></div>
+            <div class="field"><label>Weight (lb)</label><input id="f-weight" type="number" value="${p.weight||''}" /></div>
+          </div>
+          <div id="xmanNote" style="font-size:11.5px;color:#8f2f29;font-weight:600;margin:-4px 0 10px;${isXMan(p) ? '' : 'display:none;'}">
+            ⚠ X-MAN (over 165 lb) — 8th grade rule: offensive line only on offense.
+          </div>
+          <div class="two-col">
+            <div class="field"><label>40-yd dash (sec)</label><input id="f-speed" type="number" step="0.01" value="${p.speed40||''}" /></div>
+            <div class="field"><label>Vertical jump (in)</label><input id="f-vert" type="number" step="0.1" value="${p.vertical||''}" /></div>
+          </div>
+          <div class="field"><label>Shuttle / agility (sec)</label><input id="f-shuttle" type="number" step="0.01" value="${p.shuttle||''}" /></div>
+          <div class="field"><label>Parent / guardian name</label><input id="f-parentName" type="text" value="${escapeHtml(p.parentName||'')}" /></div>
+          <div class="two-col">
+            <div class="field"><label>Parent phone</label><input id="f-parentPhone" type="text" value="${escapeHtml(p.parentPhone||'')}" /></div>
+            <div class="field"><label>Parent email</label><input id="f-parentEmail" type="text" value="${escapeHtml(p.parentEmail||'')}" /></div>
+          </div>
+          <div class="field"><label>Notes / other combine stats</label><textarea id="f-notes" placeholder="Bench reps, broad jump, coach comments…">${escapeHtml(p.notes||'')}</textarea></div>
+          <div class="modal-actions">
+            <div>${!isNew ? '<button class="danger" id="deleteBtn">Delete player</button>' : ''}</div>
+            <div class="right">
+              <button class="cancel" id="cancelBtn">Cancel</button>
+              <button class="primary" id="saveBtn">${isNew ? 'Add player' : 'Save changes'}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $('#f-weight').addEventListener('input', ()=>{
+      const w = parseFloat($('#f-weight').value);
+      $('#xmanNote').style.display = (!isNaN(w) && w > 165) ? 'block' : 'none';
+    });
+
+    let pendingPhotoAction = null;
+    if(!isNew){
+      try{
+        window.storage.get(`photo_${id}`, true).then(res=>{
+          if(res && res.value){
+            $('#photoPreview').src = res.value;
+            $('#photoPreview').style.display = 'block';
+            $('#removePhotoBtn').style.display = 'inline-block';
+          }
+        }).catch(()=>{ /* no photo yet */ });
+      }catch(e){ /* storage not available — profile still fully usable without a photo */ }
+    }
+    $('#f-photo').addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      resizeImageFile(file, 320).then(dataUrl=>{
+        pendingPhotoAction = {type:'set', data:dataUrl};
+        $('#photoPreview').src = dataUrl;
+        $('#photoPreview').style.display = 'block';
+        $('#removePhotoBtn').style.display = 'inline-block';
+      }).catch(()=>{ showStatus('Could not read that image'); });
+    });
+    $('#removePhotoBtn').addEventListener('click', ()=>{
+      pendingPhotoAction = {type:'remove'};
+      $('#photoPreview').style.display = 'none';
+      $('#photoPreview').src = '';
+      $('#removePhotoBtn').style.display = 'none';
+    });
+
+    let posState = {};
+    POSITIONS.forEach(pos=>{
+      if((p.positions||[]).includes(pos+'*')) posState[pos] = 'uncertain';
+      else if((p.positions||[]).includes(pos)) posState[pos] = 'on';
+      else posState[pos] = 'off';
+    });
+    $all('.pos-check', root).forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        const pos = chip.dataset.pos;
+        const next = posState[pos] === 'off' ? 'on' : posState[pos] === 'on' ? 'uncertain' : 'off';
+        posState[pos] = next;
+        chip.className = 'pos-check' + (next==='on' ? ' on' : next==='uncertain' ? ' uncertain' : '');
+        chip.textContent = next==='uncertain' ? pos + '*' : pos;
+      });
+    });
+
+    $('#modalBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='modalBackdrop') closeModal(); });
+    $('#cancelBtn').addEventListener('click', closeModal);
+
+    $('#saveBtn').addEventListener('click', async ()=>{
+      const name = $('#f-name').value.trim();
+      if(!name){ showStatus('Name is required'); return; }
+      const positions = Object.keys(posState)
+        .filter(k=>posState[k] !== 'off')
+        .map(k=> posState[k] === 'uncertain' ? k + '*' : k);
+      const data = {
+        name,
+        status: $('#f-status').value,
+        team: $('#f-team').value,
+        positions,
+        height: $('#f-height').value.trim(),
+        weight: $('#f-weight').value ? Number($('#f-weight').value) : '',
+        speed40: $('#f-speed').value ? Number($('#f-speed').value) : '',
+        vertical: $('#f-vert').value ? Number($('#f-vert').value) : '',
+        shuttle: $('#f-shuttle').value ? Number($('#f-shuttle').value) : '',
+        notes: $('#f-notes').value.trim(),
+        parentName: $('#f-parentName').value.trim(),
+        parentPhone: $('#f-parentPhone').value.trim(),
+        parentEmail: $('#f-parentEmail').value.trim(),
+      };
+      let targetId = id;
+      if(isNew){
+        if(isTeamLocked(data.team)){
+          showStatus(`${teamDisplayLabel(data.team)} is locked in — unlock it first to add players there`);
+          return;
+        }
+        targetId = uid();
+        const newPlayer = { id: targetId, prefs:{}, ...data };
+        if(newPlayer.team !== 'pool' && !newPlayer.prefs[newPlayer.team]) newPlayer.prefs[newPlayer.team] = 'want';
+        players.push(newPlayer);
+        await savePlayers();
+        addLog(`added ${newPlayer.name} to ${data.team==='pool'?'the pool':data.team}`);
+      } else {
+        const existing = players.find(pp=>pp.id===id);
+        const teamChanged = existing.team !== data.team;
+        if(teamChanged && (isTeamLocked(existing.team) || isTeamLocked(data.team))){
+          const lockedLabel = isTeamLocked(existing.team) ? existing.team : data.team;
+          showStatus(`${teamDisplayLabel(lockedLabel)} is locked in — unlock it first to move this player`);
+          return;
+        }
+        Object.assign(existing, data);
+        if(existing.team !== 'pool'){
+          if(!existing.prefs) existing.prefs = {};
+          if(!existing.prefs[existing.team]) existing.prefs[existing.team] = 'want';
+        }
+        await savePlayers();
+        addLog(`updated ${existing.name}'s info${teamChanged ? ' and moved them to ' + (data.team==='pool'?'the pool':data.team) : ''}`);
+      }
+      if(pendingPhotoAction){
+        try{
+          if(pendingPhotoAction.type === 'set'){
+            await window.storage.set(`photo_${targetId}`, pendingPhotoAction.data, true);
+          } else if(pendingPhotoAction.type === 'remove'){
+            await window.storage.delete(`photo_${targetId}`, true);
+          }
+        }catch(e){ showStatus('Saved player, but the photo failed to save'); }
+      }
+      closeModal();
+      renderBoard();
+    });
+
+    if(!isNew){
+      $('#deleteBtn').addEventListener('click', async ()=>{
+        if(!confirm(`Remove ${p.name} from the board entirely? This can't be undone.`)) return;
+        if(isTeamLocked(p.team)){
+          showStatus(`${teamDisplayLabel(p.team)} is locked in — unlock it first to remove this player`);
+          return;
+        }
+        players = players.filter(pp=>pp.id!==id);
+        await savePlayers();
+        try{ await window.storage.delete(`photo_${id}`, true); }catch(e){}
+        addLog(`removed ${p.name} from the board`);
+        closeModal();
+        renderBoard();
+      });
+    }
+  }
+
+  function openMoveModal(playerId){
+    const player = players.find(p=>p.id===playerId);
+    if(!player) return;
+    const root = $('#modalRoot');
+    const destinations = ['pool', ...TEAMS.map(t=>t.key)];
+    const optionsHtml = destinations.map(key=>{
+      const isCurrent = player.team === key;
+      const locked = !isCurrent && isTeamLocked(key);
+      const t = TEAMS.find(tt=>tt.key===key);
+      const label = key === 'pool' ? 'Pool (unassigned)' : `${t.label} — ${t.coach}`;
+      let suffix = '';
+      if(isCurrent) suffix = ' (current)';
+      else if(locked) suffix = ' 🔒 locked';
+      return `<button class="move-option${isCurrent ? ' current' : ''}" data-team="${key}" ${isCurrent || locked ? 'disabled' : ''}>${escapeHtml(label)}${suffix}</button>`;
+    }).join('');
+
+    root.innerHTML = `
+      <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+          <h3>Move ${escapeHtml(player.name)}</h3>
+          <div class="move-options">${optionsHtml}</div>
+          <div class="modal-actions">
+            <div></div>
+            <div class="right"><button class="cancel" id="moveCancel">Cancel</button></div>
+          </div>
+        </div>
+      </div>
+    `;
+    $('#modalBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='modalBackdrop') closeModal(); });
+    $('#moveCancel').addEventListener('click', closeModal);
+
+    $all('.move-option', root).forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const teamKey = btn.dataset.team;
+        if(teamKey === player.team) return;
+        if(isTeamLocked(teamKey)){
+          showStatus(`${teamDisplayLabel(teamKey)} is locked in — unlock it first to make changes`);
+          return;
+        }
+        if(isTeamLocked(player.team)){
+          showStatus(`${teamDisplayLabel(player.team)} is locked in — unlock it first to move this player`);
+          return;
+        }
+        const fromTeam = player.team;
+        player.team = teamKey;
+        if(teamKey !== 'pool'){
+          if(!player.prefs) player.prefs = {};
+          if(!player.prefs[teamKey]) player.prefs[teamKey] = 'want';
+        }
+        await savePlayers();
+        const toLabel = teamKey === 'pool' ? 'the pool' : teamKey;
+        const fromLabel = fromTeam === 'pool' ? 'the pool' : fromTeam;
+        addLog(`moved ${player.name} from ${fromLabel} to ${toLabel}`);
+        closeModal();
+        renderBoard();
+      });
+    });
+  }
+
+  function openImportModal(){
+    const root = $('#modalRoot');
+    root.innerHTML = `
+      <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+          <h3>Import players</h3>
+          <div class="field">
+            <label>Paste one player per line</label>
+            <div style="font-size:12px;color:#5b5548;margin-bottom:6px;">
+              Format: <code>Name</code> or <code>Name, new</code> / <code>Name, returning</code>. Defaults to "new" if not specified. All imported players land in the Pool.
+            </div>
+            <textarea class="import-textarea" id="importText" placeholder="Jaylen Moore, returning
+Owen Baxter, new
+Kai Sullivan"></textarea>
+          </div>
+          <div class="modal-actions">
+            <div></div>
+            <div class="right">
+              <button class="cancel" id="cancelImport">Cancel</button>
+              <button class="primary" id="doImport">Import</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    $('#modalBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='modalBackdrop') closeModal(); });
+    $('#cancelImport').addEventListener('click', closeModal);
+    $('#doImport').addEventListener('click', async ()=>{
+      const raw = $('#importText').value;
+      const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+      if(lines.length===0){ showStatus('Nothing to import'); return; }
+      let count = 0;
+      lines.forEach(line=>{
+        const parts = line.split(',').map(s=>s.trim());
+        const name = parts[0];
+        if(!name) return;
+        let status = 'new';
+        if(parts[1] && /return/i.test(parts[1])) status = 'returning';
+        else if(parts[1] && /new/i.test(parts[1])) status = 'new';
+        players.push({ id: uid(), name, status, team:'pool', positions:[], height:'', weight:'', speed40:'', vertical:'', shuttle:'', notes:'', prefs:{} });
+        count++;
+      });
+      await savePlayers();
+      addLog(`imported ${count} player${count===1?'':'s'} into the pool`);
+      closeModal();
+      renderBoard();
+      showStatus(`Imported ${count} players`);
+    });
+  }
+
+  // ---------------- WIRING ----------------
+  $('#addPlayerBtn').addEventListener('click', ()=> openEditModal(null));
+  $('#importBtn').addEventListener('click', openImportModal);
+  $('#tableViewBtn').addEventListener('click', ()=> setView(currentView === 'board' ? 'table' : 'board'));
+  $('#logBtn').addEventListener('click', ()=>{
+    renderLog();
+    $('#logPanel').classList.add('open');
+  });
+  $('#closeLogBtn').addEventListener('click', ()=> $('#logPanel').classList.remove('open'));
+
+  let coachSaveTimer = null;
+  $('#coachInput').addEventListener('input', (e)=>{
+    coachName = e.target.value;
+    updateAffiliationUI();
+    clearTimeout(coachSaveTimer);
+    coachSaveTimer = setTimeout(async ()=>{
+      try{ await window.storage.set('coach_name', coachName, false); }catch(err){}
+    }, 500);
+  });
+
+  let affSaveTimer = null;
+  $('#affiliationSelect').addEventListener('change', (e)=>{
+    coachAffiliation = e.target.value;
+    clearTimeout(affSaveTimer);
+    affSaveTimer = setTimeout(async ()=>{
+      try{ await window.storage.set('coach_affiliation', coachAffiliation, false); }catch(err){}
+    }, 300);
+  });
+
+  // ---------------- PASSWORD GATE ----------------
+  const SITE_PASSWORD = 'WLThunder2026!';
+
+  async function initApp(){
+    await loadAll();
+    $('#loadingNote').style.display = 'none';
+    $('#board').style.display = 'flex';
+    $('#board').style.flexWrap = 'wrap';
+    renderBoard();
+    if(!hasIdentity()){
+      openWelcomeIdentityModal(()=>{ /* nothing else needed — header + future actions now use the saved identity */ });
+    }
+  }
+
+  function unlockGate(){
+    $('#passwordGate').style.display = 'none';
+    initApp();
+  }
+
+  $('#pwSubmit').addEventListener('click', async ()=>{
+    const val = $('#pwInput').value;
+    if(val === SITE_PASSWORD){
+      try{ await window.storage.set('access_granted', 'true', false); }catch(e){}
+      unlockGate();
+    } else {
+      $('#pwError').style.display = 'block';
+      $('#pwInput').value = '';
+      $('#pwInput').focus();
+    }
+  });
+  $('#pwInput').addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ $('#pwSubmit').click(); } });
+
+  // ---------------- INIT ----------------
+  (async function checkAccess(){
+    if(typeof window.storage === 'undefined'){
+      $('#passwordGate').style.display = 'none';
+      $('#setupNeededGate').style.display = 'flex';
+      return;
+    }
+    try{
+      const a = await window.storage.get('access_granted', false);
+      if(a && a.value === 'true'){ unlockGate(); return; }
+    }catch(e){ /* not granted yet, gate stays visible */ }
+    $('#pwInput').focus();
+  })();
+
+})();
+</script>
+</body>
+</html>
